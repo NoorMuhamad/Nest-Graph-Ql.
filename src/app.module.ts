@@ -8,8 +8,9 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import typeOrmConfig from './config/database.config';
 import { AuthorsModule } from './modules/authors/authors.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
-console.log(process.env);
 @Module({
   imports: [
     NestConfigModule.forRoot({
@@ -17,6 +18,8 @@ console.log(process.env);
     }),
     PostsModule,
     AuthorsModule,
+    UsersModule,
+    AuthModule,
     TypeOrmModule.forRoot(typeOrmConfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

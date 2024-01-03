@@ -14,12 +14,30 @@ type Author {
   posts: [Post!]!
 }
 
+type User {
+  id: Int!
+  userName: String!
+}
+
+type LoginResponse {
+  access_token: String!
+  user: User!
+}
+
 type Query {
   post: Post!
   authors: [Author!]!
+  users: [User!]!
+  user(userName: String!): User!
 }
 
 type Mutation {
   createPost(title: String!, authorId: String!): Post!
   createAuthor(name: String!): Author!
+  login(loginInput: LoginInput!): LoginResponse!
+}
+
+input LoginInput {
+  userName: String!
+  password: String!
 }

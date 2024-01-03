@@ -1,7 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-console.log('=========>', process.env.DB_HOST);
-
 const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',
