@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Author } from 'src/authors/entities/author.entity';
+import { Author } from 'src/modules/authors/entities/author.entity';
 import {
   Column,
   Entity,

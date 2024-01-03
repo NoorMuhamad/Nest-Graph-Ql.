@@ -1,35 +1,23 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
-import { PostsModule } from './posts/posts.module';
-import { AuthorsModule } from './authors/authors.module';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
-import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
+import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
+import typeOrmConfig from './config/database.config';
+import { AuthorsModule } from './modules/authors/authors.module';
+import { PostsModule } from './modules/posts/posts.module';
+
+console.log(process.env);
 @Module({
   imports: [
+    NestConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PostsModule,
     AuthorsModule,
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'root',
-    //   password: 'root',
-    //   database: 'tutors',
-    //   entities: ['dist/**/*.entity.{ts,js}'],
-    //   synchronize: true,
-    // }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'bsrwbcosoti9mfxhvpyp-mysql.services.clever-cloud.com',
-      port: 3306,
-      username: 'u0eoklpddedc6aib',
-      password: 'yQuATz14a5yOqPAt9QBS',
-      database: 'bsrwbcosoti9mfxhvpyp',
-      entities: ['dist/**/*.entity.{ts,js}'],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(typeOrmConfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

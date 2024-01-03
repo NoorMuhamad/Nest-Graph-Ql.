@@ -2,16 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Author {
-  id: ID!
-  name: String!
-  posts: [Post!]!
-}
-
 type Post {
   id: ID!
   title: String!
   author: Author!
+}
+
+type Author {
+  id: ID!
+  name: String!
+  posts: [Post!]!
 }
 
 type Query {
