@@ -15,7 +15,7 @@ export class GqlAuthGuard extends AuthGuard('local') {
       request.body = ctx.getArgs().loginInput;
       return request;
     } catch (error) {
-      throw error; // Rethrow the error to propagate it
+      throw error;
     }
   }
 }

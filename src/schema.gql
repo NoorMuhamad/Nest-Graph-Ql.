@@ -15,8 +15,19 @@ type Author {
 }
 
 type User {
-  id: Int!
-  userName: String!
+  id: ID!
+  username: String!
+  password: String!
+  email: String!
+  phoneNumber: String
+  role: UserRole!
+  address: String
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  STUFF
 }
 
 type LoginResponse {
@@ -28,16 +39,26 @@ type Query {
   post: Post!
   authors: [Author!]!
   users: [User!]!
-  user(userName: String!): User!
+  user(username: String!): User!
 }
 
 type Mutation {
   createPost(title: String!, authorId: String!): Post!
   createAuthor(name: String!): Author!
+  createUser(createUserInput: CreateUserInput!): User!
   login(loginInput: LoginInput!): LoginResponse!
 }
 
+input CreateUserInput {
+  username: String!
+  password: String!
+  email: String!
+  phoneNumber: String!
+  role: UserRole!
+  address: String!
+}
+
 input LoginInput {
-  userName: String!
+  username: String!
   password: String!
 }
