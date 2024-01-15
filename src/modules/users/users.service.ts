@@ -21,8 +21,30 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
+  async findAll(
+    limit: number,
+    offset: number,
+    sortBy: string,
+    sortOrder: 'ASC' | 'DESC',
+    search: string,
+  ): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    if (search) {
+      queryBuilder.where('user.username LIKE :search', {
+        search: `%${search}%`,
+      });
+    }
+
+    if (sortBy) {
+      const order: 'ASC' | 'DESC' =
+        (sortOrder?.toUpperCase() as 'ASC' | 'DESC') || 'ASC';
+      queryBuilder.orderBy(`user.${sortBy}`, order);
+    }
+
+    queryBuilder.skip(offset).take(limit);
+
+    return await queryBuilder.getMany();
   }
 
   findOne(username: string): Promise<User[]> {
