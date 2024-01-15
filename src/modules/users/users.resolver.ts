@@ -1,5 +1,5 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { User } from './entities/user.entity';
+import { User, UserResult } from './entities/user.entity';
 import { UsersService } from './users.service';
 import {
   UseGuards,
@@ -7,38 +7,34 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwtAuth.guard';
-import { CreateUserInput } from './dto/create-user.input';
 import RoleGuard from 'src/guards/role.guard';
 import { UserRole } from 'src/enums';
+import { CreateUserInput } from './dto/create-user.input';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query(() => [User], { name: 'users' })
+  @Query(() => UserResult, { name: 'users' })
   @UseGuards(JwtAuthGuard)
   @UseGuards(RoleGuard(UserRole.ADMIN))
   async findAll(
-    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
-    @Args('offset', { type: () => Int, defaultValue: 0 }) offset: number,
+    @Args('page', { type: () => Int, defaultValue: 10 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 0 }) limit: number,
     @Args('sortBy', { nullable: true }) sortBy: string,
     @Args('sortOrder', { defaultValue: 'ASC' }) sortOrder: 'ASC' | 'DESC',
     @Args('search', { nullable: true }) search: string,
-  ): Promise<User[]> {
+  ): Promise<UserResult> {
     try {
-      const users = await this.usersService.findAll(
+      const { data, totalPages, currentPage } = await this.usersService.findAll(
+        page,
         limit,
-        offset,
         sortBy,
         sortOrder,
         search,
       );
-
-      if (!Array.isArray(users)) {
-        throw new BadRequestException('Invalid data returned from service.');
-      }
-
-      return users;
+      return { data, totalPages, currentPage };
     } catch (error) {
       throw new BadRequestException('Failed to fetch users.');
     }
@@ -69,6 +65,19 @@ export class UsersResolver {
       return await this.usersService.create(createUserInput);
     } catch (error) {
       throw new BadRequestException('Failed to create user.');
+    }
+  }
+
+  @Mutation(() => User)
+  async updateUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+  ): Promise<User> {
+    try {
+      const updatedUser = await this.usersService.update(updateUserInput);
+      return updatedUser;
+    } catch (error) {
+      console.error('Failed to update user:', error.message);
+      throw new BadRequestException('Failed to update user.');
     }
   }
 }

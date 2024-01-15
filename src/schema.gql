@@ -30,6 +30,12 @@ enum UserRole {
   STUFF
 }
 
+type UserResult {
+  data: [User!]!
+  totalPages: Float!
+  currentPage: Float!
+}
+
 type LoginResponse {
   access_token: String!
   user: User!
@@ -38,7 +44,7 @@ type LoginResponse {
 type Query {
   post: Post!
   authors: [Author!]!
-  users(limit: Int! = 10, offset: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): [User!]!
+  users(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): UserResult!
   user(username: String!): User!
 }
 
@@ -46,6 +52,7 @@ type Mutation {
   createPost(title: String!, authorId: String!): Post!
   createAuthor(name: String!): Author!
   createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
   login(loginInput: LoginInput!): LoginResponse!
 }
 
@@ -56,6 +63,16 @@ input CreateUserInput {
   phoneNumber: String!
   role: UserRole!
   address: String!
+}
+
+input UpdateUserInput {
+  username: String
+  password: String
+  email: String
+  phoneNumber: String
+  role: UserRole
+  address: String
+  id: ID!
 }
 
 input LoginInput {

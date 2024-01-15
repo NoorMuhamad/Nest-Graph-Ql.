@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { UserRole } from 'src/enums';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 // Register the enum in GraphQL
 registerEnumType(UserRole, {
@@ -40,4 +40,16 @@ export class User {
   @Field({ nullable: true })
   @Column({ nullable: true, type: 'text' })
   address?: string;
+}
+
+@ObjectType()
+export class UserResult {
+  @Field(() => [User])
+  data: User[];
+
+  @Field()
+  totalPages: number;
+
+  @Field()
+  currentPage: number;
 }
