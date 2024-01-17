@@ -2,9 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { BaseResponse } from 'src/common';
 import { User } from './entities/user.entity';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import { CreateUserType } from './types/create.user';
+import { UpdateUserType } from './types/update.user';
 
 @Injectable()
 export class UsersService {
@@ -18,9 +19,9 @@ export class UsersService {
    * @param createUserInput - The user data to be created.
    * @returns The created user.
    */
-  async create(createUserInput: CreateUserInput): Promise<User> {
+  async create(createUserType: CreateUserType): Promise<User> {
     try {
-      const user = this.userRepository.create(createUserInput);
+      const user = this.userRepository.create(createUserType);
       return this.userRepository.save(user);
     } catch (error) {
       console.error('Error creating user:', error.message);
@@ -72,8 +73,8 @@ export class UsersService {
    * @param username - The username to search for.
    * @returns The found user.
    */
-  findOne(username: string): Promise<User[]> {
-    return this.userRepository.find({
+  findOne(username: string): Promise<User | undefined> {
+    return this.userRepository.findOne({
       where: { username },
     });
   }
@@ -83,10 +84,10 @@ export class UsersService {
    * @param updateUserInput - The updated user data.
    * @returns The updated user.
    */
-  async update(updateUserInput: UpdateUserInput): Promise<User> {
+  async update(updateUserType: UpdateUserType): Promise<User> {
     try {
       // Exclude the primary key from the update
-      const { id, ...updateData } = updateUserInput;
+      const { id, ...updateData } = updateUserType;
 
       const existingUser = await this.userRepository.findOne({
         where: { id },
@@ -94,7 +95,7 @@ export class UsersService {
 
       if (!existingUser) {
         throw new NotFoundException(
-          `User with ID ${updateUserInput.id} not found.`,
+          `User with ID ${updateUserType.id} not found.`,
         );
       }
 
@@ -104,6 +105,32 @@ export class UsersService {
     } catch (error) {
       console.error('Error updating user:', error.message);
       throw error;
+    }
+  }
+
+  /**
+   * Find a user by username.
+   * @param username - The username to search for.
+   * @returns The found user.
+   */
+  async delete(id: string): Promise<BaseResponse> {
+    try {
+      const deleteResult = await this.userRepository.delete(id);
+
+      if (deleteResult.affected > 0) {
+        return {
+          success: true,
+          message: 'User deleted successfully.',
+        };
+      } else {
+        return {
+          success: false,
+          message: 'User not found or deletion failed.',
+        };
+      }
+    } catch (error) {
+      // Handle other errors (e.g., database connection issues)
+      return { success: false, message: 'Failed to delete user.' };
     }
   }
 }

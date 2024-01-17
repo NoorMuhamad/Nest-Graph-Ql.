@@ -11,7 +11,7 @@ registerEnumType(UserRole, {
 @Entity()
 export class User {
   @Field(() => ID)
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Field()
@@ -52,4 +52,13 @@ export class UserResult {
 
   @Field()
   currentPage: number;
+}
+
+@ObjectType()
+export class DeleteUser {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
 }

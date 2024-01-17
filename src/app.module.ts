@@ -10,6 +10,9 @@ import { AuthorsModule } from './modules/authors/authors.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CustomersModule } from './modules/customers/customers.module';
+import { ComplaintsModule } from './modules/complaints/complaints.module';
+import { BillsModule } from './modules/bills/bills.module';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import { AuthModule } from './modules/auth/auth.module';
     PostsModule,
     AuthorsModule,
     UsersModule,
+    BillsModule,
+    CustomersModule,
+    ComplaintsModule,
     AuthModule,
     TypeOrmModule.forRoot(typeOrmConfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({

@@ -36,9 +36,77 @@ type UserResult {
   currentPage: Float!
 }
 
+type BaseResponse {
+  success: Boolean!
+  message: String!
+}
+
 type LoginResponse {
   access_token: String!
   user: User!
+}
+
+type Customer {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phoneNumber: String
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type CustomerResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Customer!]!
+}
+
+type Complaint {
+  id: ID!
+  subject: String!
+  description: String!
+  status: ComplaintStatus!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+enum ComplaintStatus {
+  PENDING
+  INPROGRESS
+  COMPLETE
+}
+
+type ComplaintResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Complaint!]!
+}
+
+type Bill {
+  id: ID!
+  billingDate: DateTime!
+  totalAmount: String!
+  status: BillStatus!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+enum BillStatus {
+  PAID
+  UNPAID
+}
+
+type BillResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Bill!]!
 }
 
 type Query {
@@ -46,17 +114,33 @@ type Query {
   authors: [Author!]!
   users(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): UserResult!
   user(username: String!): User!
+  deleteUser(id: String!): BaseResponse!
+  bills(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): BillResponse!
+  bill(billingDate: DateTime!): Bill!
+  deleteBill(id: String!): BaseResponse!
+  customers(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): CustomerResponse!
+  customer(firstName: String!): Customer!
+  deleteCustomer(id: String!): BaseResponse!
+  complaints(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): ComplaintResponse!
+  complaint(subject: String!): Complaint!
+  deleteComplaint(id: String!): BaseResponse!
 }
 
 type Mutation {
   createPost(title: String!, authorId: String!): Post!
   createAuthor(name: String!): Author!
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
+  createUser(createUserType: CreateUserType!): User!
+  updateUser(updateUserType: UpdateUserType!): User!
+  createBill(createBillType: CreateBillType!): Bill!
+  updateBill(updateBillType: UpdateBillType!): Bill!
+  createCustomer(createCustomerType: CreateCustomerType!): Customer!
+  updateCustomer(updateCustomerType: UpdateCustomerType!): Customer!
+  createComplaint(createComplaintType: CreateComplaintType!): Complaint!
+  updateComplaint(updateComplaintType: UpdateComplaintType!): Complaint!
   login(loginInput: LoginInput!): LoginResponse!
 }
 
-input CreateUserInput {
+input CreateUserType {
   username: String!
   password: String!
   email: String!
@@ -65,13 +149,56 @@ input CreateUserInput {
   address: String!
 }
 
-input UpdateUserInput {
+input UpdateUserType {
   username: String
   password: String
   email: String
   phoneNumber: String
   role: UserRole
   address: String
+  id: ID!
+}
+
+input CreateBillType {
+  billingDate: DateTime!
+  totalAmount: String!
+  status: BillStatus!
+}
+
+input UpdateBillType {
+  billingDate: DateTime
+  totalAmount: String
+  status: BillStatus
+  id: ID!
+}
+
+input CreateCustomerType {
+  firstName: String!
+  lastName: String!
+  email: String!
+  address: String!
+  phoneNumber: String!
+}
+
+input UpdateCustomerType {
+  firstName: String
+  lastName: String
+  email: String
+  address: String
+  phoneNumber: String
+  id: ID!
+}
+
+input CreateComplaintType {
+  subject: String!
+  description: String!
+  status: ComplaintStatus!
+}
+
+input UpdateComplaintType {
+  subject: String
+  description: String
+  status: ComplaintStatus
   id: ID!
 }
 

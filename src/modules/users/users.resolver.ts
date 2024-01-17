@@ -1,24 +1,24 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { User, UserResult } from './entities/user.entity';
-import { UsersService } from './users.service';
 import {
-  UseGuards,
-  NotFoundException,
   BadRequestException,
+  NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { BaseResponse } from 'src/common';
+import { UserRole } from 'src/enums';
 import { JwtAuthGuard } from 'src/guards/jwtAuth.guard';
 import RoleGuard from 'src/guards/role.guard';
-import { UserRole } from 'src/enums';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import { User, UserResult } from './entities/user.entity';
+import { CreateUserType } from './types/create.user';
+import { UpdateUserType } from './types/update.user';
+import { UsersService } from './users.service';
 
 @Resolver(() => User)
+@UseGuards(JwtAuthGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(() => UserResult, { name: 'users' })
-  @UseGuards(JwtAuthGuard)
-  @UseGuards(RoleGuard(UserRole.ADMIN))
   async findAll(
     @Args('page', { type: () => Int, defaultValue: 10 }) page: number,
     @Args('limit', { type: () => Int, defaultValue: 0 }) limit: number,
@@ -43,7 +43,7 @@ export class UsersResolver {
   @Query(() => User, { name: 'user' })
   async findOne(
     @Args('username', { type: () => String }) username: string,
-  ): Promise<User[]> {
+  ): Promise<User> {
     try {
       const user = await this.usersService.findOne(username);
 
@@ -58,11 +58,12 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
+  @UseGuards(RoleGuard(UserRole.ADMIN))
   async createUser(
-    @Args('createUserInput') createUserInput: CreateUserInput,
+    @Args('createUserType') createUserType: CreateUserType,
   ): Promise<User> {
     try {
-      return await this.usersService.create(createUserInput);
+      return await this.usersService.create(createUserType);
     } catch (error) {
       throw new BadRequestException('Failed to create user.');
     }
@@ -70,14 +71,25 @@ export class UsersResolver {
 
   @Mutation(() => User)
   async updateUser(
-    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @Args('updateUserType') updateUserType: UpdateUserType,
   ): Promise<User> {
     try {
-      const updatedUser = await this.usersService.update(updateUserInput);
+      const updatedUser = await this.usersService.update(updateUserType);
       return updatedUser;
     } catch (error) {
       console.error('Failed to update user:', error.message);
       throw new BadRequestException('Failed to update user.');
+    }
+  }
+
+  @Query(() => BaseResponse, { name: 'deleteUser' })
+  async deleteUser(
+    @Args('id', { type: () => String }) id: string,
+  ): Promise<BaseResponse> {
+    try {
+      return await this.usersService.delete(id);
+    } catch (error) {
+      throw new BadRequestException('Failed to delete user.');
     }
   }
 }

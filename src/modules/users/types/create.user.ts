@@ -4,7 +4,7 @@ import { Entity } from 'typeorm';
 
 @Entity()
 @InputType()
-export class CreateUserInput {
+export class CreateUserType {
   @Field(() => String)
   username: string;
 
