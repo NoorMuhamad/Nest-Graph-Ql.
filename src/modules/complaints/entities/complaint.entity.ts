@@ -1,10 +1,13 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseResponse, PaginatedResponse } from 'src/common';
 import { ComplaintStatus } from 'src/enums';
+import { Customer } from 'src/modules/customers/entities/customer.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -42,6 +45,11 @@ export class Complaint {
   @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @ManyToOne(() => Customer)
+  @JoinColumn()
+  @Field(() => Customer)
+  customer: Customer;
 }
 
 @ObjectType()

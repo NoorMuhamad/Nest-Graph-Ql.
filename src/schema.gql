@@ -2,18 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Post {
-  id: ID!
-  title: String!
-  author: Author!
-}
-
-type Author {
-  id: ID!
-  name: String!
-  posts: [Post!]!
-}
-
 type User {
   id: ID!
   username: String!
@@ -22,6 +10,8 @@ type User {
   phoneNumber: String
   role: UserRole!
   address: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 enum UserRole {
@@ -29,6 +19,11 @@ enum UserRole {
   ADMIN
   STUFF
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type UserResult {
   data: [User!]!
@@ -46,26 +41,41 @@ type LoginResponse {
   user: User!
 }
 
-type Customer {
+type Transaction {
   id: ID!
-  firstName: String!
-  lastName: String!
-  email: String!
-  phoneNumber: String
-  address: String
+  amount: String!
+  paymentMethod: String!
   createdAt: DateTime
   updatedAt: DateTime
+  bill: Bill!
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type CustomerResponse {
+type TransactionResponse {
   totalPages: Int!
   currentPage: Int!
-  data: [Customer!]!
+  data: [Transaction!]!
+}
+
+type Bill {
+  id: ID!
+  billingDate: DateTime!
+  totalAmount: String!
+  status: BillStatus!
+  createdAt: DateTime
+  updatedAt: DateTime
+  customer: Customer!
+  billTransaction: Transaction!
+}
+
+enum BillStatus {
+  PAID
+  UNPAID
+}
+
+type BillResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Bill!]!
 }
 
 type Complaint {
@@ -75,6 +85,7 @@ type Complaint {
   status: ComplaintStatus!
   createdAt: DateTime
   updatedAt: DateTime
+  customer: Customer!
 }
 
 enum ComplaintStatus {
@@ -89,29 +100,43 @@ type ComplaintResponse {
   data: [Complaint!]!
 }
 
-type Bill {
+type Customer {
   id: ID!
-  billingDate: DateTime!
-  totalAmount: String!
-  status: BillStatus!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phoneNumber: String
+  isActive: Boolean
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  complaints: [Complaint!]!
+  Bills: [Bill!]!
+}
+
+type CustomerResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Customer!]!
+}
+
+type Package {
+  id: ID!
+  name: String!
+  monthlyFee: Float!
+  speed: String!
+  isActive: Boolean
   createdAt: DateTime
   updatedAt: DateTime
 }
 
-enum BillStatus {
-  PAID
-  UNPAID
-}
-
-type BillResponse {
+type PackageResponse {
   totalPages: Int!
   currentPage: Int!
-  data: [Bill!]!
+  data: [Package!]!
 }
 
 type Query {
-  post: Post!
-  authors: [Author!]!
   users(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): UserResult!
   user(username: String!): User!
   deleteUser(id: String!): BaseResponse!
@@ -124,19 +149,26 @@ type Query {
   complaints(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): ComplaintResponse!
   complaint(subject: String!): Complaint!
   deleteComplaint(id: String!): BaseResponse!
+  transactions(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): TransactionResponse!
+  Transaction(paymentMethod: String!): Transaction!
+  deleteTransaction(id: String!): BaseResponse!
+  packages(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): PackageResponse!
+  package(name: String!): Package!
+  deletePackage(id: String!): BaseResponse!
 }
 
 type Mutation {
-  createPost(title: String!, authorId: String!): Post!
-  createAuthor(name: String!): Author!
   createUser(createUserType: CreateUserType!): User!
   updateUser(updateUserType: UpdateUserType!): User!
   createBill(createBillType: CreateBillType!): Bill!
-  updateBill(updateBillType: UpdateBillType!): Bill!
+  updateBill(updateTransactionType: UpdateTransactionType!): Transaction!
   createCustomer(createCustomerType: CreateCustomerType!): Customer!
   updateCustomer(updateCustomerType: UpdateCustomerType!): Customer!
   createComplaint(createComplaintType: CreateComplaintType!): Complaint!
   updateComplaint(updateComplaintType: UpdateComplaintType!): Complaint!
+  createTransaction(createTransactionType: CreateTransactionType!): Transaction!
+  createPackage(createPackageType: CreatePackageType!): Package!
+  updatePackage(updatePackageType: UpdatePackageType!): Package!
   login(loginInput: LoginInput!): LoginResponse!
 }
 
@@ -165,10 +197,9 @@ input CreateBillType {
   status: BillStatus!
 }
 
-input UpdateBillType {
-  billingDate: DateTime
-  totalAmount: String
-  status: BillStatus
+input UpdateTransactionType {
+  amount: String
+  paymentMethod: String
   id: ID!
 }
 
@@ -199,6 +230,26 @@ input UpdateComplaintType {
   subject: String
   description: String
   status: ComplaintStatus
+  id: ID!
+}
+
+input CreateTransactionType {
+  amount: String!
+  paymentMethod: String!
+}
+
+input CreatePackageType {
+  name: String!
+  monthlyFee: Float!
+  speed: String!
+  isActive: Boolean!
+}
+
+input UpdatePackageType {
+  name: String
+  monthlyFee: Float
+  speed: String
+  isActive: Boolean
   id: ID!
 }
 

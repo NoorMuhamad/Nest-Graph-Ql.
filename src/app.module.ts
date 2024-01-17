@@ -6,25 +6,25 @@ import { join } from 'path';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
 import typeOrmConfig from './config/database.config';
-import { AuthorsModule } from './modules/authors/authors.module';
-import { PostsModule } from './modules/posts/posts.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { ComplaintsModule } from './modules/complaints/complaints.module';
 import { BillsModule } from './modules/bills/bills.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { PackagesModule } from './modules/packages/packages.module';
 
 @Module({
   imports: [
     NestConfigModule.forRoot({
       isGlobal: true,
     }),
-    PostsModule,
-    AuthorsModule,
     UsersModule,
     BillsModule,
     CustomersModule,
     ComplaintsModule,
+    TransactionsModule,
+    PackagesModule,
     AuthModule,
     TypeOrmModule.forRoot(typeOrmConfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({

@@ -1,10 +1,15 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { PaginatedResponse } from 'src/common';
 import { BillStatus } from 'src/enums';
+import { Customer } from 'src/modules/customers/entities/customer.entity';
+import { Transaction } from 'src/modules/transactions/entities/transactions.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -42,6 +47,16 @@ export class Bill {
   @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @ManyToOne(() => Customer)
+  @JoinColumn()
+  @Field(() => Customer)
+  customer: Customer;
+
+  @OneToOne(() => Transaction, (transaction) => transaction.bill)
+  @JoinColumn()
+  @Field(() => Transaction)
+  billTransaction: Transaction;
 }
 
 @ObjectType()

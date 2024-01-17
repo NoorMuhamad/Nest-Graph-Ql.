@@ -1,9 +1,12 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { BaseResponse, PaginatedResponse } from 'src/common/index';
+import { PaginatedResponse } from 'src/common/index';
+import { Bill } from 'src/modules/bills/entities/bill.entity';
+import { Complaint } from 'src/modules/complaints/entities/complaint.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,6 +34,10 @@ export class Customer {
   @Column({ nullable: true })
   phoneNumber?: string;
 
+  @Field(() => Boolean, { nullable: true })
+  @Column({ default: false, nullable: true })
+  isActive?: boolean;
+
   @Field({ nullable: true })
   @Column({ nullable: true, type: 'text' })
   address?: string;
@@ -42,6 +49,14 @@ export class Customer {
   @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @OneToMany(() => Complaint, (Complaint) => Complaint.customer)
+  @Field(() => [Complaint])
+  complaints: Complaint[];
+
+  @OneToMany(() => Bill, (Bill) => Bill.customer)
+  @Field(() => [Bill])
+  Bills: Bill[];
 }
 
 @ObjectType()
@@ -49,6 +64,3 @@ export class CustomerResponse extends PaginatedResponse {
   @Field(() => [Customer])
   data: Customer[];
 }
-
-@ObjectType()
-export class DeleteCustomer extends BaseResponse {}
