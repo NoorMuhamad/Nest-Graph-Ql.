@@ -4,7 +4,7 @@ import { User } from 'src/modules/users/entities/user.entity';
 @ObjectType()
 export class LoginResponse {
   @Field()
-  access_token: string;
+  accessToken: string;
 
   @Field(() => User)
   user: User;

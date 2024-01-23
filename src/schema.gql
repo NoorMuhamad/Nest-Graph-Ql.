@@ -37,7 +37,7 @@ type BaseResponse {
 }
 
 type LoginResponse {
-  access_token: String!
+  accessToken: String!
   user: User!
 }
 
@@ -254,6 +254,6 @@ input UpdatePackageType {
 }
 
 input LoginInput {
-  username: String!
+  email: String!
   password: String!
 }

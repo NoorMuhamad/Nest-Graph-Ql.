@@ -69,13 +69,13 @@ export class UsersService {
   }
 
   /**
-   * Find a user by username.
-   * @param username - The username to search for.
+   * Find a user by email.
+   * @param username - The email to search for.
    * @returns The found user.
    */
-  findOne(username: string): Promise<User | undefined> {
+  findOne(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({
-      where: { username },
+      where: { email },
     });
   }
 
