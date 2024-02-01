@@ -58,7 +58,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  @UseGuards(RoleGuard(UserRole.ADMIN))
+  @UseGuards(RoleGuard([UserRole.OWNER, UserRole.ADMIN]))
   async createUser(
     @Args('createUserType') createUserType: CreateUserType,
   ): Promise<User> {
@@ -82,7 +82,7 @@ export class UsersResolver {
     }
   }
 
-  @Query(() => BaseResponse, { name: 'deleteUser' })
+  @Mutation(() => BaseResponse, { name: 'deleteUser' })
   async deleteUser(
     @Args('id', { type: () => String }) id: string,
   ): Promise<BaseResponse> {

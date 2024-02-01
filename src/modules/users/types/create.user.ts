@@ -6,7 +6,13 @@ import { Entity } from 'typeorm';
 @InputType()
 export class CreateUserType {
   @Field(() => String)
-  username: string;
+  firstName: string;
+
+  @Field(() => String)
+  lastName: string;
+
+  @Field(() => String)
+  cnic: string;
 
   @Field()
   password: string;

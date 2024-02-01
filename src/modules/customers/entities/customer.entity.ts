@@ -2,10 +2,12 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { PaginatedResponse } from 'src/common/index';
 import { Bill } from 'src/modules/bills/entities/bill.entity';
 import { Complaint } from 'src/modules/complaints/entities/complaint.entity';
+import { Package } from 'src/modules/packages/entities/package.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -30,17 +32,21 @@ export class Customer {
   @Column()
   email: string;
 
+  @Field()
+  @Column()
+  cnic: string;
+
   @Field({ nullable: true })
   @Column({ nullable: true })
   phoneNumber?: string;
 
-  @Field(() => Boolean, { nullable: true })
-  @Column({ default: false, nullable: true })
-  isActive?: boolean;
-
   @Field({ nullable: true })
   @Column({ nullable: true, type: 'text' })
   address?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  @Column({ default: false, nullable: true })
+  isActive?: boolean;
 
   @Field({ nullable: true })
   @CreateDateColumn()
@@ -49,6 +55,10 @@ export class Customer {
   @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @ManyToMany(() => Package, (subscribedPackage) => subscribedPackage.customers)
+  @Field(() => [Package])
+  packages: Package[];
 
   @OneToMany(() => Complaint, (Complaint) => Complaint.customer)
   @Field(() => [Complaint])

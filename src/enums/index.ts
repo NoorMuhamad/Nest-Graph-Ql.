@@ -1,7 +1,7 @@
 export enum UserRole {
   OWNER = 'owner',
   ADMIN = 'admin',
-  STUFF = 'stuff',
+  STAFF = 'staff',
 }
 
 export enum ComplaintStatus {

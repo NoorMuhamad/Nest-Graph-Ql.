@@ -22,7 +22,15 @@ export class User {
 
   @Field()
   @Column()
-  username: string;
+  firstName: string;
+
+  @Field()
+  @Column()
+  lastName: string;
+
+  @Field()
+  @Column()
+  cnic: string;
 
   @Field()
   @Column()

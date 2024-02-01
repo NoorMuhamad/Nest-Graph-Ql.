@@ -1,9 +1,11 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { PaginatedResponse } from 'src/common/index';
+import { Customer } from 'src/modules/customers/entities/customer.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,6 +40,10 @@ export class Package {
   @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @ManyToMany(() => Customer, (customer) => customer.packages)
+  @Field(() => [Customer])
+  customers: Customer[];
 }
 
 @ObjectType()

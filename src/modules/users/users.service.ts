@@ -47,8 +47,15 @@ export class UsersService {
   ): Promise<{ data: User[]; totalPages: number; currentPage: number }> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
+    // Assuming these are your searchable fields in the GraphQL schema
+    const searchableFields = ['firstName', 'lastName', 'cnic', 'id', 'role'];
+
     if (search) {
-      queryBuilder.where('user.username LIKE :search', {
+      const conditions = searchableFields
+        .map((field) => `user.${field} LIKE :search`)
+        .join(' OR ');
+
+      queryBuilder.where(`(${conditions})`, {
         search: `%${search}%`,
       });
     }

@@ -4,7 +4,9 @@
 
 type User {
   id: ID!
-  username: String!
+  firstName: String!
+  lastName: String!
+  cnic: String!
   password: String!
   email: String!
   phoneNumber: String
@@ -17,7 +19,7 @@ type User {
 enum UserRole {
   OWNER
   ADMIN
-  STUFF
+  STAFF
 }
 
 """
@@ -100,16 +102,35 @@ type ComplaintResponse {
   data: [Complaint!]!
 }
 
+type Package {
+  id: ID!
+  name: String!
+  monthlyFee: Float!
+  speed: String!
+  isActive: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  customers: [Customer!]!
+}
+
+type PackageResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Package!]!
+}
+
 type Customer {
   id: ID!
   firstName: String!
   lastName: String!
   email: String!
+  cnic: String!
   phoneNumber: String
-  isActive: Boolean
   address: String
+  isActive: Boolean
   createdAt: DateTime
   updatedAt: DateTime
+  packages: [Package!]!
   complaints: [Complaint!]!
   Bills: [Bill!]!
 }
@@ -120,26 +141,9 @@ type CustomerResponse {
   data: [Customer!]!
 }
 
-type Package {
-  id: ID!
-  name: String!
-  monthlyFee: Float!
-  speed: String!
-  isActive: Boolean
-  createdAt: DateTime
-  updatedAt: DateTime
-}
-
-type PackageResponse {
-  totalPages: Int!
-  currentPage: Int!
-  data: [Package!]!
-}
-
 type Query {
   users(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): UserResult!
   user(username: String!): User!
-  deleteUser(id: String!): BaseResponse!
   bills(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): BillResponse!
   bill(billingDate: DateTime!): Bill!
   deleteBill(id: String!): BaseResponse!
@@ -160,6 +164,7 @@ type Query {
 type Mutation {
   createUser(createUserType: CreateUserType!): User!
   updateUser(updateUserType: UpdateUserType!): User!
+  deleteUser(id: String!): BaseResponse!
   createBill(createBillType: CreateBillType!): Bill!
   updateBill(updateTransactionType: UpdateTransactionType!): Transaction!
   createCustomer(createCustomerType: CreateCustomerType!): Customer!
@@ -173,7 +178,9 @@ type Mutation {
 }
 
 input CreateUserType {
-  username: String!
+  firstName: String!
+  lastName: String!
+  cnic: String!
   password: String!
   email: String!
   phoneNumber: String!
@@ -182,7 +189,9 @@ input CreateUserType {
 }
 
 input UpdateUserType {
-  username: String
+  firstName: String
+  lastName: String
+  cnic: String
   password: String
   email: String
   phoneNumber: String
