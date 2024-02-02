@@ -1,6 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseResponse, PaginatedResponse } from 'src/common';
 import { ComplaintStatus } from 'src/enums';
+import { Company } from 'src/modules/companies/entities/company.entity';
 import { Customer } from 'src/modules/customers/entities/customer.entity';
 import {
   Column,
@@ -50,6 +51,11 @@ export class Complaint {
   @JoinColumn()
   @Field(() => Customer)
   customer: Customer;
+
+  @ManyToOne(() => Company)
+  @JoinColumn()
+  @Field(() => Company)
+  company: Company;
 }
 
 @ObjectType()

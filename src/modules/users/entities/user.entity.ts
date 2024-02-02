@@ -1,9 +1,12 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { UserRole } from 'src/enums';
+import { Company } from 'src/modules/companies/entities/company.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -62,6 +65,11 @@ export class User {
   @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @ManyToOne(() => Company)
+  @JoinColumn()
+  @Field(() => Company)
+  company: Company;
 }
 
 @ObjectType()

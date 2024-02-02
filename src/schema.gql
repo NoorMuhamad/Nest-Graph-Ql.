@@ -2,82 +2,9 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  id: ID!
-  firstName: String!
-  lastName: String!
-  cnic: String!
-  password: String!
-  email: String!
-  phoneNumber: String
-  role: UserRole!
-  address: String
-  createdAt: DateTime
-  updatedAt: DateTime
-}
-
-enum UserRole {
-  OWNER
-  ADMIN
-  STAFF
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type UserResult {
-  data: [User!]!
-  totalPages: Float!
-  currentPage: Float!
-}
-
 type BaseResponse {
   success: Boolean!
   message: String!
-}
-
-type LoginResponse {
-  accessToken: String!
-  user: User!
-}
-
-type Transaction {
-  id: ID!
-  amount: String!
-  paymentMethod: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  bill: Bill!
-}
-
-type TransactionResponse {
-  totalPages: Int!
-  currentPage: Int!
-  data: [Transaction!]!
-}
-
-type Bill {
-  id: ID!
-  billingDate: DateTime!
-  totalAmount: String!
-  status: BillStatus!
-  createdAt: DateTime
-  updatedAt: DateTime
-  customer: Customer!
-  billTransaction: Transaction!
-}
-
-enum BillStatus {
-  PAID
-  UNPAID
-}
-
-type BillResponse {
-  totalPages: Int!
-  currentPage: Int!
-  data: [Bill!]!
 }
 
 type Complaint {
@@ -88,6 +15,7 @@ type Complaint {
   createdAt: DateTime
   updatedAt: DateTime
   customer: Customer!
+  company: Company!
 }
 
 enum ComplaintStatus {
@@ -95,6 +23,11 @@ enum ComplaintStatus {
   INPROGRESS
   COMPLETE
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type ComplaintResponse {
   totalPages: Int!
@@ -110,7 +43,7 @@ type Package {
   isActive: Boolean
   createdAt: DateTime
   updatedAt: DateTime
-  customers: [Customer!]!
+  company: Company!
 }
 
 type PackageResponse {
@@ -130,7 +63,7 @@ type Customer {
   isActive: Boolean
   createdAt: DateTime
   updatedAt: DateTime
-  packages: [Package!]!
+  company: Company!
   complaints: [Complaint!]!
   Bills: [Bill!]!
 }
@@ -139,6 +72,102 @@ type CustomerResponse {
   totalPages: Int!
   currentPage: Int!
   data: [Customer!]!
+}
+
+type Transaction {
+  id: ID!
+  amount: String!
+  paymentMethod: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  bill: Bill!
+  company: Company!
+}
+
+type TransactionResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Transaction!]!
+}
+
+type Bill {
+  id: ID!
+  billingDate: DateTime!
+  totalAmount: String!
+  status: BillStatus!
+  createdAt: DateTime
+  updatedAt: DateTime
+  customer: Customer!
+  billTransaction: Transaction!
+  company: Company!
+}
+
+enum BillStatus {
+  PAID
+  UNPAID
+}
+
+type BillResponse {
+  totalPages: Int!
+  currentPage: Int!
+  data: [Bill!]!
+}
+
+type Company {
+  id: ID!
+  name: String!
+  ownerName: String!
+  cnic: String!
+  password: String!
+  email: String!
+  phoneNumber: String
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  users: [User!]!
+  customers: [Customer!]!
+  complaints: [Complaint!]!
+  packages: [Package!]!
+  bills: [Bill!]!
+  transactions: [Transaction!]!
+}
+
+type CompanyResult {
+  data: [Company!]!
+  totalPages: Float!
+  currentPage: Float!
+}
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  cnic: String!
+  password: String!
+  email: String!
+  phoneNumber: String
+  role: UserRole!
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  company: Company!
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  STAFF
+}
+
+type UserResult {
+  data: [User!]!
+  totalPages: Float!
+  currentPage: Float!
+}
+
+type LoginResponse {
+  accessToken: String!
+  user: User!
 }
 
 type Query {
@@ -150,6 +179,8 @@ type Query {
   customers(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): CustomerResponse!
   customer(firstName: String!): Customer!
   deleteCustomer(id: String!): BaseResponse!
+  companies(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): CompanyResult!
+  company(name: String!): Company!
   complaints(page: Int! = 10, limit: Int! = 0, sortBy: String, sortOrder: String! = "ASC", search: String): ComplaintResponse!
   complaint(subject: String!): Complaint!
   deleteComplaint(id: String!): BaseResponse!
@@ -169,6 +200,9 @@ type Mutation {
   updateBill(updateTransactionType: UpdateTransactionType!): Transaction!
   createCustomer(createCustomerType: CreateCustomerType!): Customer!
   updateCustomer(updateCustomerType: UpdateCustomerType!): Customer!
+  createCompany(createCompanyType: CreateCompanyType!): Company!
+  updateCompany(updateCompanyType: UpdateCompanyType!): Company!
+  deleteCompany(id: String!): BaseResponse!
   createComplaint(createComplaintType: CreateComplaintType!): Complaint!
   updateComplaint(updateComplaintType: UpdateComplaintType!): Complaint!
   createTransaction(createTransactionType: CreateTransactionType!): Transaction!
@@ -226,6 +260,27 @@ input UpdateCustomerType {
   email: String
   address: String
   phoneNumber: String
+  id: ID!
+}
+
+input CreateCompanyType {
+  name: String!
+  ownerName: String!
+  cnic: String!
+  password: String!
+  email: String!
+  phoneNumber: String!
+  address: String!
+}
+
+input UpdateCompanyType {
+  name: String
+  ownerName: String
+  cnic: String
+  password: String
+  email: String
+  phoneNumber: String
+  address: String
   id: ID!
 }
 

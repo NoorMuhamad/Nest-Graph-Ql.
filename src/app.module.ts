@@ -7,6 +7,7 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
 import typeOrmConfig from './config/database.config';
 import { UsersModule } from './modules/users/users.module';
+import { CompaniesModule } from './modules/companies/companies.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { ComplaintsModule } from './modules/complaints/complaints.module';
@@ -22,6 +23,7 @@ import { PackagesModule } from './modules/packages/packages.module';
     UsersModule,
     BillsModule,
     CustomersModule,
+    CompaniesModule,
     ComplaintsModule,
     TransactionsModule,
     PackagesModule,
