@@ -63,7 +63,13 @@ export class UsersResolver {
     @Args('createUserType') createUserType: CreateUserType,
   ): Promise<User> {
     try {
-      return await this.usersService.create(createUserType);
+      const { image, ...userData } = createUserType;
+      console.log(userData);
+      const createdUser = await this.usersService.create(createUserType);
+      if (image) {
+        await this.usersService.uploadUserImage(await image, createdUser.id);
+      }
+      return createdUser;
     } catch (error) {
       throw new BadRequestException('Failed to create user.');
     }

@@ -2,10 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { BaseResponse } from 'src/common';
+import { BaseResponse, FileUpload } from 'src/common';
 import { User } from './entities/user.entity';
 import { CreateUserType } from './types/create.user';
 import { UpdateUserType } from './types/update.user';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -139,5 +141,44 @@ export class UsersService {
       // Handle other errors (e.g., database connection issues)
       return { success: false, message: 'Failed to delete user.' };
     }
+  }
+
+  async uploadUserImage(image: FileUpload, userId: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const { createReadStream, filename } = image;
+    const stream = createReadStream();
+
+    // Ensure the 'uploads' directory exists
+    const uploadDir = path.join(__dirname, '..', 'uploads');
+    await fs.promises.mkdir(uploadDir, { recursive: true });
+
+    // Generate a unique filename for the image
+    const uniqueFilename = `${userId}-${Date.now()}-${filename}`;
+
+    // Write the file to the server
+    const filePath = path.join(uploadDir, uniqueFilename);
+    const writeStream = fs.createWriteStream(filePath);
+
+    await new Promise((resolve, reject) => {
+      stream.pipe(writeStream);
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+    });
+
+    console.log(filePath);
+
+    // Update the user's imagePath in the database
+    user.imagePath = filePath;
+
+    // Save the updated user
+    await this.userRepository.save(user);
+
+    return user;
   }
 }

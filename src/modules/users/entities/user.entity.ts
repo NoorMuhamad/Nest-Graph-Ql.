@@ -70,6 +70,10 @@ export class User {
   @JoinColumn()
   @Field(() => Company)
   company: Company;
+
+  @Field()
+  @Column({ nullable: true })
+  imagePath: string;
 }
 
 @ObjectType()

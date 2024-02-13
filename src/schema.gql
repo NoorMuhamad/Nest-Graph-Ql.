@@ -151,6 +151,7 @@ type User {
   createdAt: DateTime
   updatedAt: DateTime
   company: Company!
+  imagePath: String!
 }
 
 enum UserRole {
@@ -220,7 +221,11 @@ input CreateUserType {
   phoneNumber: String!
   role: UserRole!
   address: String!
+  image: Upload!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input UpdateUserType {
   firstName: String
@@ -231,6 +236,7 @@ input UpdateUserType {
   phoneNumber: String
   role: UserRole
   address: String
+  image: Upload
   id: ID!
 }
 
