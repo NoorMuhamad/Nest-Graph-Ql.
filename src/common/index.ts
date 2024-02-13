@@ -1,4 +1,5 @@
 import { Field, ObjectType, Int } from '@nestjs/graphql';
+import { Stream } from 'stream';
 
 @ObjectType()
 export class PaginatedResponse {
@@ -16,4 +17,10 @@ export class BaseResponse {
 
   @Field()
   message: string;
+}
+export interface FileUpload {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream: () => Stream;
 }

@@ -1,6 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { UserRole } from 'src/enums';
 import { Entity } from 'typeorm';
+import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
+import { FileUpload } from 'src/common';
 
 @Entity()
 @InputType()
@@ -28,4 +30,7 @@ export class CreateUserType {
 
   @Field()
   address: string;
+
+  @Field(() => GraphQLUpload)
+  image: Promise<FileUpload>;
 }
